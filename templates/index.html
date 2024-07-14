@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accueil</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css" />
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Fonction pour récupérer et afficher les utilisateurs
+        function fetchUsers() {
+          fetch('/api/users')
+            .then(response => response.json())
+            .then(data => {
+              const userList = document.getElementById('user-list');
+              userList.innerHTML = '';
+              data.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = `${user.id}: ${user.name} `;
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Modifier';
+                editButton.onclick = () => editUser(user.id, user.name);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Supprimer';
+                deleteButton.onclick = () => deleteUser(user.id);
+
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                userList.appendChild(li);
+              });
+            });
+        }
+
+        // Fonction pour ajouter un utilisateur
+        document
+          .getElementById('add-user-form')
+          .addEventListener('submit', function (event) {
+            event.preventDefault();
+            const userName = document.getElementById('user-name').value;
+            fetch('/api/users', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ name: userName }),
+            })
+              .then(response => response.json())
+              .then(data => {
+                document.getElementById('user-name').value = '';
+                fetchUsers(); // Rafraîchir la liste des utilisateurs
+              });
+          });
+
+        // Fonction pour modifier un utilisateur
+        function editUser(userId, currentName) {
+          const newName = prompt(
+            "Entrez le nouveau nom de l'utilisateur:",
+            currentName
+          );
+          if (newName) {
+            fetch(`/api/user/${userId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ name: newName }),
+            })
+              .then(response => response.json())
+              .then(data => {
+                fetchUsers(); // Rafraîchir la liste des utilisateurs
+              });
+          }
+        }
+
+        // Fonction pour supprimer un utilisateur
+        function deleteUser(userId) {
+          fetch(`/api/user/${userId}`, {
+            method: 'DELETE',
+          }).then(response => {
+            if (response.status === 204) {
+              fetchUsers(); // Rafraîchir la liste des utilisateurs
+            }
+          });
+        }
+
+        // Récupérer et afficher les utilisateurs lors du chargement de la page
+        fetchUsers();
+      });
+    </script>
+  </head>
+
+  <body>
+    <main>
+      <h1>Bienvenue sur la page d'accueil</h1>
+      <nav><a href="/about">À propos</a></nav>
+      <section>
+        <form id="add-user-form">
+          <label for="user-name">Nom de l'utilisateur :</label>
+          <input type="text" id="user-name" required />
+          <button type="submit">Ajouter</button>
+        </form>
+      </section>
+      <section>
+        <h2>Liste des utilisateurs</h2>
+        <ul id="user-list"></ul>
+      </section>
+    </main>
+    <footer>© 2024, Fait avec 💖 par Amram ELBAZ pour Bob! Desk</footer>
+  </body>
+</html>
