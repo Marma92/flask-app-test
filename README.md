@@ -19,7 +19,7 @@ Cette application web permet de gérer une liste d'utilisateurs en utilisant Fla
 1. Clonez le dépôt :
 
 ```bash
-git clone https://github.com/Marma92/peticrud.git
+git clone git@github.com:Marma92/flask-app-test.git
 cd votre-projet
 ```
 
@@ -42,9 +42,13 @@ Puis ouvrez votre navigateur et accédez à <http://127.0.0.1:5000>.
 4. Routes API
 
    GET /api/users : Récupère la liste des utilisateurs.
+
    POST /api/users : Ajoute un nouvel utilisateur.
+
    GET /api/user/<user_id> : Récupère les détails d'un utilisateur spécifique.
+
    PUT /api/user/<user_id> : Modifie un utilisateur existant.
+
    DELETE /api/user/<user_id> : Supprime un utilisateur.
 
 ## Licence
